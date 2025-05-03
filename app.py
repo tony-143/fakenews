@@ -103,38 +103,29 @@ if "option_selected" in st.session_state:
                 # fetch full article text
                 article_text = extract_article_text(url) or ""
                 paragraphs = article_text.split("\n")
-                preview_side = "\n".join(paragraphs[:1])  # first paragraph
-                preview_below = "\n".join(paragraphs[1:3])  # next two paragraphs
+                preview_side = "\n".join(paragraphs[:1])
+                preview_below = "\n".join(paragraphs[1:3])
 
-                # Get prediction
+                # Predict
                 vect = vectorizer.transform([preprocess_text(article_text)])
                 pred = model.predict(vect)[0]
                 prediction_label = '🟢 Real' if pred == 1 else '🔴 Fake'
 
-                # Container
                 with st.container():
-                    # Prediction in top-right
-                    st.markdown(
-                        f"""
-                        <div style='display: flex; justify-content: space-between; align-items: center;'>
-                            <div></div>
-                            <div style='font-weight: bold; font-size: 16px;'>{prediction_label}</div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                    # Headline and prediction in same row
+                    col1, col2 = st.columns([4, 1])
+                    with col1:
+                        st.markdown(f"<h3 style='font-size:22px; margin-bottom: 0;'>{title}</h3>", unsafe_allow_html=True)
+                    with col2:
+                        st.markdown(f"<p style='font-size:16px; font-weight:bold; text-align:right;'>Prediction: {prediction_label}</p>", unsafe_allow_html=True)
 
-                    # Image
+                    # Image full width
                     if image_url:
-                        st.image(image_url, caption="", use_container_width=True)
+                        st.image(image_url, use_container_width=True)
 
-                    # Title and content
-                    st.markdown(f"<h3 style='font-size:24px'>{title}</h3>", unsafe_allow_html=True)
+                    # Preview text
                     st.markdown(f"<p style='font-size:17px'>{preview_side}</p>", unsafe_allow_html=True)
-                    st.markdown(
-                        f"<p style='font-size:16px'>{preview_below}… <a href='{url}'>Read more</a></p>",
-                        unsafe_allow_html=True
-                    )
+                    st.markdown(f"<p style='font-size:16px'>{preview_below}… <a href='{url}'>Read more</a></p>", unsafe_allow_html=True)
 
                     st.markdown("---")
 
