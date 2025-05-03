@@ -99,37 +99,40 @@ if "option_selected" in st.session_state:
                 title = article["title"]
                 url = article["url"]
                 image_url = article.get("image", None)
-
+    
                 # fetch full article text
                 article_text = extract_article_text(url) or ""
-                preview = "\n".join(article_text.split("\n")[:3])
-
-                # two‑column layout for each article
-                left_col, right_col = st.columns(2)
-
+                paragraphs = article_text.split("\n")
+                preview_side = "\n".join(paragraphs[:2])  # for side-by-side
+                preview_below = "\n".join(paragraphs[2:5])  # for below
+    
+                # two-column layout
+                left_col, right_col = st.columns([1, 2])  # 1:2 ratio
+    
                 if i % 2 == 0:
-                    # even: image left, text right
+                    # Image left, text right
                     with left_col:
                         if image_url:
-                            st.image(image_url, caption=title, use_container_width=True)
+                            st.image(image_url, caption="", use_container_width=True)
                     with right_col:
-                        st.markdown(f"#### <span style='font-size:30px'>{title}</span>", unsafe_allow_html=True)  # Increased title size
-                        st.markdown(f"<p style='font-size:19px'>{preview}… <a href='{url}'>Read more</a></p>", unsafe_allow_html=True)  # Increased preview text size
-                        vect = vectorizer.transform([preprocess_text(article_text)])
-                        pred = model.predict(vect)[0]
-                        st.markdown(f"**Prediction:** {'🟢 Real' if pred==1 else '🔴 Fake'}")
+                        st.markdown(f"<h3 style='font-size:24px'>{title}</h3>", unsafe_allow_html=True)
+                        st.markdown(f"<p style='font-size:17px'>{preview_side}</p>", unsafe_allow_html=True)
                 else:
-                    # odd: text left, image right
+                    # Text left, image right
                     with left_col:
-                        st.markdown(f"#### <span style='font-size:20px'>{title}</span>", unsafe_allow_html=True)  # Increased title size
-                        st.markdown(f"<p style='font-size:16px'>{preview}… <a href='{url}'>Read more</a></p>", unsafe_allow_html=True)  # Increased preview text size
-                        vect = vectorizer.transform([preprocess_text(article_text)])
-                        pred = model.predict(vect)[0]
-                        st.markdown(f"**Prediction:** {'🟢 Real' if pred==1 else '🔴 Fake'}")
+                        st.markdown(f"<h3 style='font-size:24px'>{title}</h3>", unsafe_allow_html=True)
+                        st.markdown(f"<p style='font-size:17px'>{preview_side}</p>", unsafe_allow_html=True)
                     with right_col:
                         if image_url:
-                            st.image(image_url, caption=title, use_container_width=True)
-
+                            st.image(image_url, caption="", use_container_width=True)
+    
+                # Below both columns, display rest of preview and prediction
+                st.markdown(f"<p style='font-size:16px'>{preview_below}… <a href='{url}'>Read more</a></p>", unsafe_allow_html=True)
+    
+                vect = vectorizer.transform([preprocess_text(article_text)])
+                pred = model.predict(vect)[0]
+                st.markdown(f"**Prediction:** {'🟢 Real' if pred==1 else '🔴 Fake'}")
+    
                 st.markdown("---")
 
                 
