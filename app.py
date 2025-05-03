@@ -91,48 +91,35 @@ with col3:
 # BOTTOM ROW: Display results based on the selected option
 if "option_selected" in st.session_state:
     option = st.session_state["option_selected"]
-    
+
     if option == "headlines":
         st.subheader("Headlines Predictions")
         if "headlines" in st.session_state:
-            for i, article in enumerate(st.session_state["headlines"]):
+            for article in st.session_state["headlines"]:
                 title = article["title"]
                 url = article["url"]
                 image_url = article.get("image", None)
-    
+
                 # fetch full article text
                 article_text = extract_article_text(url) or ""
                 paragraphs = article_text.split("\n")
-                preview_side = "\n".join(paragraphs[:1])  # for side-by-side
-                preview_below = "\n".join(paragraphs[1:3])  # for below
-    
-                # two-column layout
-                left_col, right_col = st.columns([1, 2])  # 1:2 ratio
-    
-                if i % 2 == 0:
-                    # Image left, text right
-                    with left_col:
-                        if image_url:
-                            st.image(image_url, caption="", use_container_width=True)
-                    with right_col:
-                        st.markdown(f"<h3 style='font-size:24px'>{title}</h3>", unsafe_allow_html=True)
-                        st.markdown(f"<p style='font-size:17px'>{preview_side}</p>", unsafe_allow_html=True)
-                else:
-                    # Text left, image right
-                    with left_col:
-                        st.markdown(f"<h3 style='font-size:24px'>{title}</h3>", unsafe_allow_html=True)
-                        st.markdown(f"<p style='font-size:17px'>{preview_side}</p>", unsafe_allow_html=True)
-                    with right_col:
-                        if image_url:
-                            st.image(image_url, caption="", use_container_width=True)
-    
-                # Below both columns, display rest of preview and prediction
+                preview_side = "\n".join(paragraphs[:1])  # first paragraph
+                preview_below = "\n".join(paragraphs[1:3])  # next two paragraphs
+
+                # Always show image first
+                if image_url:
+                    st.image(image_url, caption="", use_container_width=True)
+
+                # Title and preview
+                st.markdown(f"<h3 style='font-size:24px'>{title}</h3>", unsafe_allow_html=True)
+                st.markdown(f"<p style='font-size:17px'>{preview_side}</p>", unsafe_allow_html=True)
                 st.markdown(f"<p style='font-size:16px'>{preview_below}… <a href='{url}'>Read more</a></p>", unsafe_allow_html=True)
-    
+
+                # Prediction
                 vect = vectorizer.transform([preprocess_text(article_text)])
                 pred = model.predict(vect)[0]
                 st.markdown(f"**Prediction:** {'🟢 Real' if pred==1 else '🔴 Fake'}")
-    
+
                 st.markdown("---")
 
                 
