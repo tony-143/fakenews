@@ -106,21 +106,37 @@ if "option_selected" in st.session_state:
                 preview_side = "\n".join(paragraphs[:1])  # first paragraph
                 preview_below = "\n".join(paragraphs[1:3])  # next two paragraphs
 
-                # Always show image first
-                if image_url:
-                    st.image(image_url, caption="", use_container_width=True)
-
-                # Title and preview
-                st.markdown(f"<h3 style='font-size:24px'>{title}</h3>", unsafe_allow_html=True)
-                st.markdown(f"<p style='font-size:17px'>{preview_side}</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='font-size:16px'>{preview_below}… <a href='{url}'>Read more</a></p>", unsafe_allow_html=True)
-
-                # Prediction
+                # Get prediction
                 vect = vectorizer.transform([preprocess_text(article_text)])
                 pred = model.predict(vect)[0]
-                st.markdown(f"**Prediction:** {'🟢 Real' if pred==1 else '🔴 Fake'}")
+                prediction_label = '🟢 Real' if pred == 1 else '🔴 Fake'
 
-                st.markdown("---")
+                # Container
+                with st.container():
+                    # Prediction in top-right
+                    st.markdown(
+                        f"""
+                        <div style='display: flex; justify-content: space-between; align-items: center;'>
+                            <div></div>
+                            <div style='font-weight: bold; font-size: 16px;'>{prediction_label}</div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+
+                    # Image
+                    if image_url:
+                        st.image(image_url, caption="", use_container_width=True)
+
+                    # Title and content
+                    st.markdown(f"<h3 style='font-size:24px'>{title}</h3>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:17px'>{preview_side}</p>", unsafe_allow_html=True)
+                    st.markdown(
+                        f"<p style='font-size:16px'>{preview_below}… <a href='{url}'>Read more</a></p>",
+                        unsafe_allow_html=True
+                    )
+
+                    st.markdown("---")
 
                 
     elif option == "manual":
