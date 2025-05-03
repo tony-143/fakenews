@@ -103,8 +103,8 @@ if "option_selected" in st.session_state:
                 # fetch full article text
                 article_text = extract_article_text(url) or ""
                 paragraphs = article_text.split("\n")
-                preview_side = "\n".join(paragraphs[:2])  # for side-by-side
-                preview_below = "\n".join(paragraphs[2:5])  # for below
+                preview_side = "\n".join(paragraphs[:1])  # for side-by-side
+                preview_below = "\n".join(paragraphs[1:3])  # for below
     
                 # two-column layout
                 left_col, right_col = st.columns([1, 2])  # 1:2 ratio
