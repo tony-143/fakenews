@@ -119,9 +119,10 @@ if "option_selected" in st.session_state:
                     with col2:
                         st.markdown(f"<p style='font-size:16px; font-weight:bold; text-align:right;'>Prediction: {prediction_label}</p>", unsafe_allow_html=True)
 
-                    # Image full width
-                    if image_url:
-                        st.image(image_url, use_container_width=True)
+                    center_col = st.columns([1, 3, 1])[1]
+                    with center_col:
+                        if image_url:
+                            st.image(image_url, use_container_width=True)
 
                     # Preview text
                     st.markdown(f"<p style='font-size:17px'>{preview_side}</p>", unsafe_allow_html=True)
